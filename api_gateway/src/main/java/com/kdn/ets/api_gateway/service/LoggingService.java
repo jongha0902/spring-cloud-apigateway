@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kdn.ets.api_gateway.entity.ApiRoute;
 import com.kdn.ets.api_gateway.entity.GatewayLog;
+import com.kdn.ets.api_gateway.helper.ClientIpHelper;
 import com.kdn.ets.api_gateway.repository.GatewayLogRepository;
 
 @Service
@@ -64,9 +65,7 @@ public class LoggingService {
 											                .requestedAt(LocalDateTime.now().minusNanos(latency * 1_000_000L))
 											                .respondedAt(LocalDateTime.now())
 											                .latencyMs(latency)
-											                .clientIp(exchange.getRequest().getRemoteAddress() != null
-											                        ? exchange.getRequest().getRemoteAddress().getAddress().getHostAddress()
-											                        : "unknown")
+											                .clientIp(ClientIpHelper.resolve(exchange))
 											                .userAgent(exchange.getRequest().getHeaders().getFirst(HttpHeaders.USER_AGENT))
 											                .statusCode(statusCode)
 											                .body(safeRequestBody);
