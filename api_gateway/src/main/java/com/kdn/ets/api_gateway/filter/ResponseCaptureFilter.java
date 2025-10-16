@@ -28,8 +28,7 @@ public class ResponseCaptureFilter implements GlobalFilter, Ordered {
     private final GatewayLogHelper logHelper;
 
     @Override
-    public Mono<Void> filter(ServerWebExchange exchange,
-                             org.springframework.cloud.gateway.filter.GatewayFilterChain chain) {
+    public Mono<Void> filter(ServerWebExchange exchange, org.springframework.cloud.gateway.filter.GatewayFilterChain chain) {
 
         final ServerHttpResponse original = exchange.getResponse();
         final StringBuilder respBody = new StringBuilder();

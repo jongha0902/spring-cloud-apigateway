@@ -21,8 +21,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kdn.ets.api_gateway.entity.ApiRoute;
 import com.kdn.ets.api_gateway.entity.GatewayLog;
 import com.kdn.ets.api_gateway.helper.ClientIpHelper;
+import com.kdn.ets.api_gateway.helper.GatewayLogHelper;
 import com.kdn.ets.api_gateway.repository.GatewayLogRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class LoggingService {
 
@@ -54,10 +58,13 @@ public class LoggingService {
         String rawRequestBody = exchange.getAttribute("captured_request_body");
         String contentType = exchange.getRequest().getHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
         String safeRequestBody = maskBodyIfPossible(rawRequestBody, contentType);
+        
+        final String path = exchange.getRequest().getURI().getPath();
+        final String apiId = path.startsWith("/") ? path.substring(1) : path;
 
         GatewayLog.GatewayLogBuilder logBuilder = GatewayLog.builder()
 											                .userId(userId)
-											                .apiId(apiInfo != null ? apiInfo.getApiId() : "unknown")
+											                .apiId(apiId != null ? apiId : "unknown")
 											                .method(exchange.getRequest().getMethod().name())
 											                .path(apiInfo != null ? apiInfo.getPath() : "unknown")
 											                .queryParam(exchange.getRequest().getQueryParams().toString())
@@ -124,6 +131,7 @@ public class LoggingService {
             }
         } catch (Exception ignore) {
             // 파싱 실패 시 원문 그대로 저장
+        	log.warn("loggingService.logRequest failed (async)", ignore);
         }
         return body;
     }
