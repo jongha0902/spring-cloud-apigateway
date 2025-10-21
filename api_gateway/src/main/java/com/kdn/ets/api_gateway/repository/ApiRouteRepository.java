@@ -7,7 +7,8 @@ import java.util.Optional;
 public interface ApiRouteRepository extends JpaRepository<ApiRoute, String> {
 
     /**
-     * apiId를 기준으로 ApiRoute 엔티티를 조회합니다.
+     * apiId, method를 기준으로 ApiRoute 엔티티를 조회합니다.
      */
-    Optional<ApiRoute> findByApiId(String apiId);
+    
+    Optional<ApiRoute> findByApiIdAndMethod(String apiId, String method);
 }

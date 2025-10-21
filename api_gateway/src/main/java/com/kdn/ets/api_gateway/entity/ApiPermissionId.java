@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 public class ApiPermissionId implements Serializable {
 
     private String apiId;
+    private String method;
     private String userId;
 }

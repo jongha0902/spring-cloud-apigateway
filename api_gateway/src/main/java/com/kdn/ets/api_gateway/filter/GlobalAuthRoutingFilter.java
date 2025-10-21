@@ -54,16 +54,16 @@ public class GlobalAuthRoutingFilter implements GlobalFilter, Ordered {
 
         // 라우트 조회 (블로킹 가능성 → boundedElastic)
         return Mono.fromCallable(() ->
-                    apiRouteRepository.findByApiId(apiId)
-                        .filter(route -> "Y".equalsIgnoreCase(route.getUseYn()))
-                        .orElseThrow(() -> new ApiException(404, "API를 찾을 수 없거나 비활성화되었습니다: " + apiId))
-               )
+			        apiRouteRepository.findByApiIdAndMethod(apiId, requestMethod)
+							          .filter(route -> "Y".equalsIgnoreCase(route.getUseYn()))
+							          .orElseThrow(() -> new ApiException(404, "API를 찾을 수 없거나 비활성화되었거나, 메서드가 일치하지 않습니다: " + apiId + "[" + requestMethod + "]"))
+			    )
                .subscribeOn(Schedulers.boundedElastic())
                .flatMap(apiInfo -> {
                    // 메서드 검증
-                   if (!apiInfo.getMethod().equalsIgnoreCase(requestMethod)) {
-                       return Mono.error(new ApiException(405, "허용되지 않은 메서드입니다: " + requestMethod));
-                   }
+//                   if (!apiInfo.getMethod().equalsIgnoreCase(requestMethod)) {
+//                       return Mono.error(new ApiException(405, "허용되지 않은 메서드입니다: " + requestMethod));
+//                   }
                    exchange.getAttributes().put("api_info", apiInfo);
 
                    // 인증/인가
